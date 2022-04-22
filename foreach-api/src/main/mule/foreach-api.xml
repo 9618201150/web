@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="78acd7cd-e19e-4e6d-ab95-5bad65df9e4e" >
+		<http:listener-connection host="localhost" port="8080" />
+	</http:listener-config>
+	<db:config name="Database_Config6" doc:name="Database Config" doc:id="746afbbc-e8ca-4d08-82b7-19705eff8324" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="CHINNI@455@siri" database="chinnidb" />
+	</db:config>
+	<flow name="foreach-apiFlow" doc:id="c2b4a7e2-e609-405e-8b0e-4e6c77caae92" >
+		<http:listener doc:name="Listener" doc:id="b72a66de-10cc-4d80-9836-faa252b040ac" config-ref="HTTP_Listener_config" path="foreach"/>
+		<ee:transform doc:name="Transform Message" doc:id="5f5f503d-f02a-45a6-b871-f8b6b2338098" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+1 to 100 map
+{
+  id: 200 + $$,
+  name: "mounika",
+  number: 45555,
+  lastname: "sandukula"
+ }	]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="f74d853d-f969-4a2f-9a39-ef54574223d5" >
+			<logger level="INFO" doc:name="Logger" doc:id="1b66a688-70c3-4ffa-80bc-dd85e4f31b83" message="#[payload]"/>
+			<db:insert doc:name="Insert" doc:id="12252816-7869-42df-bfda-f406e021e6f9" config-ref="Database_Config6">
+				<db:sql ><![CDATA[insert into chinnidb.student (id, name, number, lastname) values  (:id, :name, :number, :lastname);]]></db:sql>
+			</db:insert>
+		</foreach>
+	</flow>
+</mule>
